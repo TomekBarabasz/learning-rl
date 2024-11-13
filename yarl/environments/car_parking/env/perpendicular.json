@@ -1,0 +1,25 @@
+{
+    "environment" : {
+        "bounding_box" : [
+            [0,10],
+            [10,0]
+        ],
+        "obstacles" : [
+            [
+                [0  ,5],
+                [3.5,0]
+            ],
+            [
+                [6.5,5],
+                [10 ,0]
+            ]
+        ]
+    },
+    "target_state" : {
+        "position_x" : 5,
+        "position_y" : 1.5,
+        "oriantation" : [90,180],
+        "speed" : 0,
+        "tolerance" : 3
+    }
+}

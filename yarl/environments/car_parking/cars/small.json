@@ -1,0 +1,12 @@
+{
+    "car" : {
+        "width" : 2,
+        "length" : 4,
+        "front_wheel_mount_point" : 0.5,
+        "rear_wheel_mount_point" : -0.5,
+        "max_speed" : 3,
+        "speed_increment" : 1,
+        "max_steering_angle" : 15,
+        "steering_angle_increment" : 5
+    }
+}
