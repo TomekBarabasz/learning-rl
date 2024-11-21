@@ -6,4 +6,4 @@
 
 ## other parameters
 * tolerance: percents
-* bounding_box: [top_left, bottom_right]
+* bounding_box: [[left,bottom], [right,top]]

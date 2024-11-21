@@ -10,7 +10,7 @@ def makeRotMatrix(angle):
 
 def rotate(angle, Points):
     ROT = makeRotMatrix(angle)
-    return ROT.dot(np.array(Points).T).T
+    return ROT.dot(Points.T).T
 
 def move(dt,Points):
     if type(dt) is Vector2:
@@ -26,3 +26,6 @@ def rotMove_radians(rad,dt,Points):
 def rotMove(angle,dt,Points):
     rad = math.radians(angle)
     return rotMove_radians(rad,dt,Points)
+
+def clamp(value, min_value, max_value):
+    return max(min_value, min(value, max_value))

@@ -5,11 +5,8 @@ class environment(ABC):
     def get_info(self):
         raise NotImplementedError
     abstractmethod
-    def reset_to_random(self):
+    def random_state(self):
         raise NotImplementedError
     abstractmethod
-    def initialize(self, *state):
-        raise NotImplementedError
-    abstractmethod
-    def step(self, *actions):
+    def step(self, state, actions, dt=1.0):
         raise NotImplementedError

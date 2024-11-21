@@ -34,4 +34,5 @@ class Vector2:
         return f'({self.x},{self.y})'
     def dot(self, matrix):
         return Vector2(*dot(matrix,[self.x, self.y]))
-
+    def asInt(self):
+        return Vector2(round(self.x),round(self.y))
