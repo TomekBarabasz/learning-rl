@@ -8,11 +8,8 @@ from math import pi,radians
 
 def create_env_polygons(env_config, screen_size, scale):
     env_polygons = []
-    screen_height = screen_size[1]
     for rect in env_config.obstacles:
         pts = np.array(rect)*scale
-        for p in pts:
-            p[1] = screen_height - p[1]
         env_polygons.append(pts)
     return env_polygons
 
@@ -21,9 +18,7 @@ def draw_env(screen,env_polygons,color):
         filled_polygon(screen, poly, color)
 
 def draw_car(screen,car_state,geometry,color,scale,screen_size):
-    screen_height = screen_size[1]
     scaled_pos = Vector2(car_state[0],car_state[1]) * scale
-    scaled_pos.y = screen_height - scaled_pos.y
     pts = rotMove_radians(car_state[2], scaled_pos, geometry)
     filled_polygon(screen, pts, color)
     c = scaled_pos.asInt()
@@ -52,7 +47,14 @@ def get_actions(events,car_config):
     else:
         turn = 0
 
-    return acceleration,turn
+    do_print = False
+    for e in events:
+        if e.type == pygame.KEYDOWN:
+            if e.unicode == 'p':
+                do_print = True
+                break
+        
+    return acceleration,turn,do_print
 
 def run_interactive(env, initial_state=None, scale=50, fullscreen=False,verbose=False):
     print('starting interactive car-parking simulation')
@@ -79,8 +81,7 @@ def run_interactive(env, initial_state=None, scale=50, fullscreen=False,verbose=
     font = pygame.font.SysFont("Arial", 15)
     
     car_state = list(initial_state) if initial_state is not None else env.random_state()
-    car_state[2] = car_state[2] - pi/2
-    
+        
     t0 = t1 = datetime.now()
     while True:
         events = pygame.event.get()
@@ -88,9 +89,9 @@ def run_interactive(env, initial_state=None, scale=50, fullscreen=False,verbose=
             break
         screen.fill(background_color)
         actions = get_actions(events,car_config)
-        car_state = env.step(car_state, actions, (t1-t0).total_seconds())
+        car_state,end_state,_ = env.step(car_state, actions, (t1-t0).total_seconds())
         draw_env(screen,env_polygons,env_color)
-        draw_car(screen,car_state,car_geometry,car_color,scale,screen_size)
+        draw_car(screen,car_state,car_geometry,car_color if not end_state else (255,100,100),scale,screen_size)
         display_info(screen,font,car_state,verbose)
         pygame.display.flip()
         t0 = t1

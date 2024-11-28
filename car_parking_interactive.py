@@ -10,4 +10,4 @@ parser.add_argument("--fullscreen","-f", action='store_true', help="go fullscree
 Args = parser.parse_args()
 
 env = make_environment('car-parking',car='small',env='perpendicular')
-run_interactive(env,initial_state=(3,7,radians(0),0,0),scale=Args.scale,fullscreen=Args.fullscreen,verbose=Args.verbose)
+run_interactive(env,initial_state=(3,7,radians(-90),0,0),scale=Args.scale,fullscreen=Args.fullscreen,verbose=Args.verbose)

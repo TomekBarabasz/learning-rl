@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from .vector import Vector2
 from copy import deepcopy
+import numpy as np
 
 def bbox_range(bbox,coord):  return bbox[0][coord],bbox[1][coord]
 def bbox_xrange(bbox):  return bbox_range(bbox,0)
@@ -45,7 +46,39 @@ class Bbox:
 
 class RBbox:
     def __init__(self, corners : list[Vector2]):
-        self.corners = deepcopy(corners)
+        self.corners = np.array(corners)
 
     def overlap(self, other):
-        return False
+        # Convert the rectangles into numpy arrays
+        rect1 = self.corners
+        rect2 = other.corners
+    
+        # Helper function to project rectangle onto an axis
+        def project_rectangle(rect, axis):
+            projections = rect @ axis  # Dot product of all corners with the axis
+            return np.min(projections), np.max(projections)
+
+        # Helper function to check if two projections overlap
+        def projections_overlap(proj1, proj2):
+            return not (proj1[1] < proj2[0] or proj2[1] < proj1[0])
+
+        # Compute edges of the rectangles
+        edges = np.vstack([
+            rect1[1] - rect1[0],  # Edge 1 of rect1
+            rect1[3] - rect1[0],  # Edge 2 of rect1
+            rect2[1] - rect2[0],  # Edge 1 of rect2
+            rect2[3] - rect2[0],  # Edge 2 of rect2
+        ])
+
+        # Compute perpendicular axes
+        axes = np.array([[-edge[1], edge[0]] for edge in edges])
+
+        # Check for overlap on each axis
+        for axis in axes:
+            axis = axis / np.linalg.norm(axis)  # Normalize the axis
+            proj1 = project_rectangle(rect1, axis)
+            proj2 = project_rectangle(rect2, axis)
+            if not projections_overlap(proj1, proj2):
+                return False  # No overlap on this axis
+
+        return True  # Overlaps on all axes

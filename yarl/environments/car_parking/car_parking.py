@@ -1,5 +1,5 @@
 from ..environment import environment
-from ...utils import readConfig,clamp,Bbox,RBbox
+from ...utils import readConfig,clamp,Bbox,RBbox,rotMove_radians
 
 from math import pi,sin,cos,radians,tan
 from pathlib import Path
@@ -14,7 +14,7 @@ class EnvInfo:
         spi = self.car.speed_increment
         self.action_space = [
             ('accelerate' , (-spi,0,+spi)),
-            ('turn' , (-sai,0,sai))
+            ('turn' ,       (-sai,0,sai))
         ]
         self.environment.bounding_box = ebb = Bbox.make(self.environment.bounding_box)
         self.environment.obstacles_rbb = [RBbox(c) for c in self.environment.obstacles]
@@ -39,7 +39,7 @@ class car_parking_env(environment):
                             environment=env_cfg.environment,\
                             target_state = env_cfg.target_state)
         self.info.pos_reward = kwargs.get("positive_reward", 10)
-        self.info.new_reward = kwargs.get("negative_reward",-10)
+        self.info.neg_reward = kwargs.get("negative_reward",-10)
 
     def get_info(self):
         return self.info
@@ -48,9 +48,17 @@ class car_parking_env(environment):
         raise NotImplementedError
     
     def _make_car_rbbox(self,state,c,s):
-        return None
+        w2,l2 = self.info.car.width / 2, self.info.car.length / 2
+        return RBbox(rotMove_radians(state[2],[state[0],state[1]],[(-w2,-l2), (-w2,l2),(w2,l2),(w2,-l2)]))
     
     def step(self, state, action, dt=1.0):
+        # state[0] : position_x
+        # state[1] : position_y
+        # state[2] : orientation
+        # state[3] : speed
+        # state[4] : steering_angle
+        # action[0] : acceleration
+        # action[1] : turn
         max_speed = self.info.car.max_speed
         max_steering_angle = self.info.car.max_steering_angle
         snew = [0.0] * 5
@@ -62,19 +70,23 @@ class car_parking_env(environment):
         s = sin(state[2])
         speed = snew[3] * dt
         snew[0] = state[0] + speed * s
-        snew[1] = state[1] + speed * c
+        snew[1] = state[1] - speed * c
         snew[2] = state[2] + speed * tan(snew[4]) / self.info.car.wheel_base
-
-        return snew
-    
+   
         car_bbox = self._make_car_rbbox(snew,c,s)
         collision = False
+        do_print = action[2]
         for o in self.info.environment.obstacles_rbb:
             if car_bbox.overlap(o):
                 collision = True
-                break
+
         if collision:
-            return self.info.neg_reward
+            return snew, True, self.info.neg_reward
+        
+
+        return snew, False, None
+
+
         
 
             
