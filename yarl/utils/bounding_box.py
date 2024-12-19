@@ -43,6 +43,10 @@ class Bbox:
         b,t = self,other if self.y_min < other.y_min else other,self
         if b.y_max > t.x_min: return False
         return True
+    
+    def enclose(self, other):
+        return self.x_min <= other.x_min and self.y_max >= other.x_max\
+            and self.y_min <= other.y_min and self.y_max >= other.y_max
 
 class RBbox:
     def __init__(self, corners : list[Vector2]):
@@ -82,3 +86,10 @@ class RBbox:
                 return False  # No overlap on this axis
 
         return True  # Overlaps on all axes
+    
+    def Bbox(self):
+         #self.corners = np.array(corners)
+         x = self.corners[:,0]
+         y = self.corners[:,1]
+         return Bbox(min(x),min(y),max(x),max(y))
+ 

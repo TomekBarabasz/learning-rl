@@ -26,7 +26,7 @@ class Vector2:
         dy = self.y-other.y
         return dx*dx+dy*dy
     def dist(self,other):
-        return sqrt( self.distSq() )
+        return sqrt( self.distSq(other) )
     def unity(self):
         ool = 1.0/self.length()
         return Vector2(self.x*ool,self.y*ool)

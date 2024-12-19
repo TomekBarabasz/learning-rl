@@ -14,10 +14,9 @@
         ]
     },
     "target_state" : {
-        "position_x" : 5,
-        "position_y" : 1.5,
-        "oriantation" : [90,180],
+        "position" : [5, 1.5],
+        "orientation" : [90,180],
         "speed" : 0,
-        "tolerance" : 3
+        "tolerance" : 0.03
     }
 }
